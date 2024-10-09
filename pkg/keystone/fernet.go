@@ -137,7 +137,7 @@ func FernetCronJob(
 	completions := int32(1)
 
 	// create Volume and VolumeMounts
-	volumes := getVolumes(instance.Name)
+	volumes := getVolumes(keystoneapiinstance)
 	volumeMounts := getVolumeMounts()
 
 	cronjob := &batchv1.CronJob{
