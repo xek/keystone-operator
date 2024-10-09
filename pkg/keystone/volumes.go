@@ -22,19 +22,25 @@ import (
 )
 
 // getVolumes - service volumes
-func getVolumes(instance *keystonev1.KeystoneAPI) []corev1.Volume {
-	name := instance.Name
+func getVolumes(keystoneapiinstance *keystonev1.KeystoneAPI) []corev1.Volume {
+	//func getVolumes(instance *keystonev1.KeystoneAPIFernet) []corev1.Volume {
+	name := keystoneapiinstance.Name
 	var scriptsVolumeDefaultMode int32 = 0755
 	var config0640AccessMode int32 = 0640
 
+	instance := &keystonev1.KeystoneAPIFernet{KeystoneAPI: keystoneapiinstance}
+
 	fernetKeys := []corev1.KeyToPath{}
-	var i *int32 = new(int32)
-	for *i = 0; *i < *instance.Spec.FernetKeys; *i++ {
+
+	var numberKeys int
+	fmt.Sscan(instance.Spec.FernetMaxActiveKeys, &numberKeys)
+
+	for i := 0; i < numberKeys; i++ {
 		fernetKeys = append(
 			fernetKeys,
 			corev1.KeyToPath{
-				Key:  fmt.Sprintf("FernetKeys%d", *i),
-				Path: fmt.Sprintf("%d", *i),
+				Key:  fmt.Sprintf("FernetKeys%d", i),
+				Path: fmt.Sprintf("%d", i),
 			},
 		)
 	}
