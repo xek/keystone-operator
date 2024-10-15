@@ -53,9 +53,9 @@ const (
 
               cd /var/lib/fernet-keys
               mkdir /tmp/keys
-              for file in FernetKeys[0-9]*;
+              for file in [0-9]*;
               do
-                cat "$file" > /tmp/keys/"${file#FernetKeys}"
+                cat "$file" > /tmp/keys/"${file}"
               done
 
               cd /tmp/keys
@@ -91,24 +91,6 @@ const (
               kubectl patch secret -n $NAMESPACE $SECRET_NAME \
                 --patch-file=/tmp/patch_file.json
               echo $(date -u) $((i+1)) keys rotated.
-
-              cd /var/lib/fernet-keys
-              if [ -f "FernetKeys$MAX_ACTIVE_KEYS" ]; then
-                echo '[' > /tmp/patch_file.json
-                i=$((MAX_ACTIVE_KEYS-1))
-                while [ -f "FernetKeys$((i+1))" ]; do
-                  echo '{"op": "remove", "path": "/data/FernetKeys'$i'"},' \
-                  >> /tmp/patch_file.json
-                  i=$((i+1))
-                done
-                  echo '{"op": "remove", "path": "/data/FernetKeys'$i'"}' \
-                  >> /tmp/patch_file.json
-                echo ']' >> /tmp/patch_file.json
-
-                kubectl patch secret -n $NAMESPACE $SECRET_NAME \
-                   --type=json --patch-file=/tmp/patch_file.json
-                echo $(date -u) $MAX_ACTIVE_KEYS through $i keys deleted.
-              fi
 `
 )
 
