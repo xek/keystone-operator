@@ -1,0 +1,7 @@
+# check job executed successfully
+apiVersion: kuttl.dev/v1beta1
+kind: TestAssert
+namespaced: true
+commands:
+  - script: |
+      oc wait -n $NAMESPACE --for=condition=complete --timeout=30s job/rotation-job-test1
