@@ -1379,38 +1379,46 @@ func (r *KeystoneAPIReconciler) ensureFernetKeys(
 	//
 	secretName := keystone.ServiceName
 	secret, hash, err := oko_secret.GetSecret(ctx, helper, secretName, instance.Namespace)
+
 	if err != nil && !k8s_errors.IsNotFound(err) {
 		return err
-	} else if k8s_errors.IsNotFound(err) {
-		fernetKeys := map[string]string{
-			"CredentialKeys0": keystone.GenerateFernetKey(),
-			"CredentialKeys1": keystone.GenerateFernetKey(),
-		}
-		var numberKeys int
-		fmt.Sscan(instance.Spec.FernetMaxActiveKeys, &numberKeys)
-		for i := 0; i < numberKeys; i++ {
-			fernetKeys[fmt.Sprintf("FernetKeys%d", i)] = keystone.GenerateFernetKey()
-		}
-
-		tmpl := []util.Template{
-			{
-				Name:       secretName,
-				Namespace:  instance.Namespace,
-				Type:       util.TemplateTypeNone,
-				CustomData: fernetKeys,
-				Labels:     labels,
-			},
-		}
-		err := oko_secret.EnsureSecrets(ctx, helper, instance, tmpl, envVars)
-		if err != nil {
-			return err
-		}
 	} else {
 		// add hash to envVars
 		(*envVars)[secret.Name] = env.SetValue(hash)
 	}
 
-	// TODO: fernet key rotation
+	fernetKeys := map[string]string{
+		"CredentialKeys0": keystone.GenerateFernetKey(),
+		"CredentialKeys1": keystone.GenerateFernetKey(),
+	}
+
+	var numberKeys int
+	fmt.Sscan(instance.Spec.FernetMaxActiveKeys, &numberKeys)
+
+	for i := 0; i < numberKeys; i++ {
+		key := fmt.Sprintf("FernetKeys%d", i)
+		v, exists := secret.Data[key]
+		if exists {
+			fernetKeys[key] = string(v[:])
+		} else {
+			fernetKeys[key] = keystone.GenerateFernetKey()
+		}
+	}
+
+	tmpl := []util.Template{
+		{
+			Name:       secretName,
+			Namespace:  instance.Namespace,
+			Type:       util.TemplateTypeNone,
+			CustomData: fernetKeys,
+			Labels:     labels,
+		},
+	}
+
+	err = oko_secret.EnsureSecrets(ctx, helper, instance, tmpl, envVars)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
