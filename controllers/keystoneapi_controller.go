@@ -1413,10 +1413,19 @@ func (r *KeystoneAPIReconciler) ensureFernetKeys(
 
 		changedKeys := false
 
+		extraKey := fmt.Sprintf("FernetKeys%d", numberKeys)
+		//
+		// Fernet Key rotation
+		//
+
+		if false { // TODO: trigger rotation
+			secret.Data[extraKey] = secret.Data["FernetKeys0"]
+			secret.Data["FernetKeys0"] = []byte(keystone.GenerateFernetKey())
+		}
+
 		//
 		// Remove extra keys when FernetMaxActiveKeys changes
 		//
-		extraKey := fmt.Sprintf("FernetKeys%d", numberKeys)
 		for {
 			_, exists := secret.Data[extraKey]
 			if !exists {
