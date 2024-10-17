@@ -30,12 +30,7 @@ func getVolumes(keystoneapiinstance *keystonev1.KeystoneAPI) []corev1.Volume {
 	instance := &keystonev1.KeystoneAPIFernet{KeystoneAPI: keystoneapiinstance}
 
 	fernetKeys := []corev1.KeyToPath{}
-
-	var numberKeys int
-	_, err := fmt.Sscan(instance.Spec.FernetMaxActiveKeys, &numberKeys)
-	if err != nil {
-		numberKeys = 5 // The default
-	}
+	numberKeys := int(*instance.Spec.FernetMaxActiveKeys)
 
 	for i := 0; i < numberKeys; i++ {
 		fernetKeys = append(

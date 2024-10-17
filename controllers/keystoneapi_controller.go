@@ -1378,12 +1378,7 @@ func (r *KeystoneAPIReconciler) ensureFernetKeys(
 	// check if secret already exist
 	//
 	secretName := keystone.ServiceName
-
-	var numberKeys int
-	_, err := fmt.Sscan(instance.Spec.FernetMaxActiveKeys, &numberKeys)
-	if err != nil {
-		return err
-	}
+	numberKeys := int(*instance.Spec.FernetMaxActiveKeys)
 
 	secret, hash, err := oko_secret.GetSecret(ctx, helper, secretName, instance.Namespace)
 

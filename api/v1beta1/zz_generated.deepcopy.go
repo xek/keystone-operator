@@ -167,6 +167,11 @@ func (in *KeystoneAPISpecCore) DeepCopyInto(out *KeystoneAPISpecCore) {
 		*out = new(int32)
 		**out = **in
 	}
+	if in.FernetMaxActiveKeys != nil {
+		in, out := &in.FernetMaxActiveKeys, &out.FernetMaxActiveKeys
+		*out = new(int32)
+		**out = **in
+	}
 	out.PasswordSelectors = in.PasswordSelectors
 	if in.NodeSelector != nil {
 		in, out := &in.NodeSelector, &out.NodeSelector

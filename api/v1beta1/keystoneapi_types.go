@@ -131,9 +131,9 @@ type KeystoneAPISpecCore struct {
 	FernetRotationSchedule string `json:"fernetRotationSchedule"`
 
 	// +kubebuilder:validation:Optional
-	// +kubebuilder:default="5"
+	// +kubebuilder:default=5
 	// FernetMaxActiveKeys - Maximum number of fernet token keys after rotation
-	FernetMaxActiveKeys string `json:"fernetMaxActiveKeys"`
+	FernetMaxActiveKeys *int32 `json:"fernetMaxActiveKeys"`
 
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:default={admin: AdminPassword}

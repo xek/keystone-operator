@@ -17,8 +17,8 @@ package keystone
 
 import (
 	"encoding/base64"
-
 	"math/rand"
+	"strconv"
 
 	keystonev1 "github.com/openstack-k8s-operators/keystone-operator/api/v1beta1"
 	"github.com/openstack-k8s-operators/lib-common/modules/common/env"
@@ -112,7 +112,7 @@ func FernetCronJob(
 	envVars["KOLLA_CONFIG_STRATEGY"] = env.SetValue("COPY_ALWAYS")
 	envVars["SECRET_NAME"] = env.SetValue(ServiceName)
 	envVars["MAX_ACTIVE_KEYS"] = env.SetValue(
-		instance.Spec.FernetMaxActiveKeys)
+		strconv.Itoa(int(*instance.Spec.FernetMaxActiveKeys)))
 
 	backoffLimit := int32(0)
 	parallelism := int32(1)
